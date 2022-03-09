@@ -1,0 +1,7 @@
+black
+darkslategray
+slategray
+lightgray
+green
+red
+orange

@@ -1,4 +1,3 @@
-import tkinter as tk
 from Classe.Box import *
 from Classe.Reseau import *
 from Classe.Fenetre import *
