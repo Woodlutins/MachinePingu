@@ -3,7 +3,6 @@ import webbrowser
 import os
 from Classe.InterfaceGraphique import *
 
-
 class Fenetre(tk.Tk) :
     def __init__(self, nom):
         self.nom = nom
@@ -16,22 +15,22 @@ class Fenetre(tk.Tk) :
 
         menubar = tk.Menu(self.fenetre)
 
-        filemenu = tk.Menu(menubar)
-        filemenu.add_command(label="Reduce", command=lambda: self.fenetre.iconify())
-        filemenu.add_command(label="Exit", command=lambda: self.fenetre.destroy())
-        menubar.add_cascade(label="File", menu=filemenu)
+        self.filemenu = tk.Menu(menubar)
+        self.filemenu.add_command(label="Reduce", command=lambda: self.fenetre.iconify())
+        self.filemenu.add_command(label="Exit", command=lambda: self.fenetre.destroy())
+        menubar.add_cascade(label="File", menu=self.filemenu)
 
-        optionmenu = tk.Menu(menubar)
-        optionmenu.add_command(label="Color", command=lambda: self.Inter())
-        optionmenu.add_command(label="Config")
-        optionmenu.add_command(label="Fullscreen", command=lambda: self.fs())
-        menubar.add_cascade(label="Options", menu=optionmenu)
+        self.optionmenu = tk.Menu(menubar)
+        self.optionmenu.add_command(label="Colors", command=lambda: self.Inter())
+        self.optionmenu.add_command(label="Config")
+        self.optionmenu.add_command(label="Fullscreen", command=lambda: self.fs())
+        menubar.add_cascade(label="Options", menu=self.optionmenu)
 
-        intmenu = tk.Menu(menubar)
-        intmenu.add_command(label="Help", command=lambda: os.startfile('readme.md'))
-        intmenu.add_command(label="About", command=lambda: webbrowser.open('https://github.com/Woodlutins/MachinePingu'))
-        intmenu.add_command(label="Report bug", command=lambda: webbrowser.open('https://github.com/Woodlutins/MachinePingu/issues'))
-        menubar.add_cascade(label="?", menu=intmenu)
+        self.intmenu = tk.Menu(menubar)
+        self.intmenu.add_command(label="Help", command=lambda: os.startfile('readme.md'))
+        self.intmenu.add_command(label="About", command=lambda: webbrowser.open('https://github.com/Woodlutins/MachinePingu'))
+        self.intmenu.add_command(label="Report bug", command=lambda: webbrowser.open('https://github.com/Woodlutins/MachinePingu/issues'))
+        menubar.add_cascade(label="?", menu=self.intmenu)
 
         self.fenetre.config(menu=menubar)
 
@@ -40,10 +39,9 @@ class Fenetre(tk.Tk) :
         self.fenetre.attributes("-fullscreen", self.fullScreenState)
 
     def Inter(self):
-
-        #print(self.Int.Fenetre.winfo_exists())
-        #if self.Int.Fenetre.winfo_exists():
-            #self.Int.Fenetre.destroy()
-        self.Int = OptionGraphique(self.fenetre)
-
+        self.optionmenu.entryconfig(1, state=tk.DISABLED)
+        self.Int = OptionGraphique(self.fenetre, self.optionmenu)
+        self.Int.Fenetre.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.Int.Fenetre.mainloop()
+    def on_closing(self):
+        self.Int.Annuler()

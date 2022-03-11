@@ -1,19 +1,21 @@
 import tkinter as tk
 from tkinter.colorchooser import askcolor
+import os
 
-with open('Classe/config.txt') as f:
-    lines = f.readlines()
+def loadConfig():
+    file1 = open('Classe/config.txt', 'r')
+    lines = file1.readlines()
+    file1.close()
+    i=0
+    global Color
+    for line in lines:
+        Color[i]=line[:-1]
+        i+=1
 
-i=0
-Color=[0,0,0,0,0,0,0,0,0]
-for line in lines:
-    Color[i]=line[:-1]
-    i+=1
-    
 class OptionGraphique(tk.Tk) :
-    def __init__(self, fParent):
+    def __init__(self, fParent, OptionMenu):
         self.Fenetre = tk.Toplevel(fParent)
-
+        self.OM=OptionMenu
         F = tk.Frame(self.Fenetre)
         tk.Label(F, text="FondFenetre", width=10).pack(side=tk.LEFT)
         BtnChg0 = tk.Button(F, text="", bg=Color[0], width=10, command = lambda: self.change_color(BtnChg0))
@@ -56,14 +58,54 @@ class OptionGraphique(tk.Tk) :
         BtnChg6.pack(side=tk.LEFT)
         F.pack()
 
+        F = tk.Frame(self.Fenetre)
+        tk.Button(F, text="Valider", command = lambda: self.Valider()).pack(side=tk.LEFT, padx="5")
+        tk.Button(F, text="Annuler", command = lambda: self.Annuler()).pack(side=tk.LEFT,padx="5")
+        F.pack()
+
+
     def change_color(self, Btn):
         colors = askcolor(title="Color Chooser")
+        if colors[1]:
+            i=0
+            for Col in Color:
+                if Col == Btn['bg']:
+                    C = i
+                i+=1
 
+            self.ModifLigne(C, colors[1])
+            loadConfig()
+            Btn['bg' ]= colors[1]
+
+    def ModifLigne(self, OldLine, Newline):
+        file1 = open('Classe/config.txt', 'r')
+        lines = file1.readlines()
+        file1.close()
+        fichier = open("Classe/buff.txt", "a")
         for line in lines:
-            if line[:-1] == Color[0]:
-                print(line)
-                line = line.replace(line, colors[1])
+            if line[:-1] == Color[OldLine]:
+                fichier.write(Newline+"\n")
+            else:
+                fichier.write(line)
+        fichier.close()
 
+    def Valider(self):
+        try:
+            with open("Classe/buff.txt"): pass
+            os.remove("Classe/config.txt")
+            os.rename("Classe/buff.txt","Classe/config.txt")
+        except IOError: pass
+        self.OM.entryconfig(1, state=tk.NORMAL)
+        self.Fenetre.destroy()
 
-        Color[0] = colors[1]
-        Btn['bg']=Color[0]
+    def Annuler(self):
+        try:
+            with open("Classe/buff.txt"): pass
+            os.remove("Classe/buff.txt")
+        except IOError: pass
+        self.OM.entryconfig(1, state=tk.NORMAL)
+        self.Fenetre.destroy()
+
+##-CODE-SPECIALE-##
+Color=[0,0,0,0,0,0,0]
+loadConfig()
